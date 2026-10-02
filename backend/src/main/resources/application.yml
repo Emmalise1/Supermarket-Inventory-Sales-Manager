@@ -1,0 +1,75 @@
+spring:
+  application:
+    name: supermarket-inventory-sales-manager
+
+  # ---- MySQL: primary relational operational data (source of truth) ----
+  datasource:
+    url: ${MYSQL_URL:jdbc:mysql://localhost:3306/supermarket?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC}
+    username: ${MYSQL_USER:root}
+    password: ${MYSQL_PASSWORD:root}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update          # local dev convenience; schema documented in docs/database.md
+    open-in-view: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+        format_sql: false
+
+  # ---- MongoDB: audit logs & notifications (document-oriented data) ----
+  data:
+    mongodb:
+      # serverSelectionTimeoutMS bounds the wait when MongoDB is unreachable
+      uri: ${MONGODB_URI:mongodb://localhost:27017/supermarket?serverSelectionTimeoutMS=2000&connectTimeoutMS=2000}
+    # ---- Redis: caching layer only (never the source of truth) ----
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      timeout: 2000ms
+
+  # ---- RabbitMQ: message broker for async events ----
+  rabbitmq:
+    host: ${RABBITMQ_HOST:localhost}
+    port: ${RABBITMQ_PORT:5672}
+    username: ${RABBITMQ_USER:guest}
+    password: ${RABBITMQ_PASSWORD:guest}
+    listener:
+      simple:
+        default-requeue-rejected: false
+
+  # ---- OAuth2 resource server (JWT, HS256 shared secret) ----
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          secret: ${JWT_SECRET:CqXM+UjRGiqFSoOZEEAEmop0O9t1zusXdluWgDHdbFU=}
+
+  mvc:
+    format:
+      date: yyyy-MM-dd
+      date-time: yyyy-MM-dd HH:mm:ss
+
+server:
+  port: ${SERVER_PORT:8080}
+
+# ---- Application settings ----
+app:
+  security:
+    jwt:
+      ttl-minutes: 480          # token lifetime (8 hours)
+  cache:
+    product-ttl-minutes: 10     # Redis TTL for product lookups (5-15 min recommended)
+    dashboard-ttl-minutes: 5    # Redis TTL for dashboard summaries
+  cors:
+    allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:5173,http://localhost:3000}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: never
