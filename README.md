@@ -9,7 +9,6 @@ A full-stack supermarket inventory and sales management system built with
 **React + Vite** (frontend) and **Spring Boot** (backend), using **MySQL**,
 **MongoDB**, **RabbitMQ** and **Redis**.
 
-> **No Docker.** The whole system runs on the normal local development
 > environment: local MySQL, local MongoDB, local RabbitMQ, local Redis,
 > Spring Boot and the Vite dev server.
 
