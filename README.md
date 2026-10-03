@@ -74,6 +74,14 @@ cd backend
 mvn spring-boot:run
 ```
 
+**Using XAMPP?** XAMPP's MySQL `root` user has an **empty password** by
+default, while this project's config default is `root`. Start with:
+
+```bash
+cd backend
+mvn spring-boot:run -Dspring-boot.run.arguments="--spring.datasource.password="
+```
+
 On first start the tables are created automatically (`ddl-auto: update`) and
 demo data is seeded (branches, users, categories, suppliers, products).
 
@@ -162,7 +170,7 @@ See [docs/redis-caching.md](docs/redis-caching.md).
 ## 6. Testing
 
 ```bash
-# Backend: 37 tests (unit, security/RBAC, integration)
+# Backend: 38 tests (unit, security/RBAC, integration)
 cd backend && mvn test
 
 # Frontend: 12 tests
