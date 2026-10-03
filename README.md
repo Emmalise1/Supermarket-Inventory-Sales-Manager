@@ -200,7 +200,4 @@ Health check for deployment verification: `GET /actuator/health`.
 Git feature branches → pull requests → review → merge to `main`, with the CI
 pipeline required to pass (automated build + tests).
 
-## 10. Not used
 
-- **Docker / Docker Compose** - removed from the design entirely; the project
-  runs on plain local services and CI needs no container runtime.
