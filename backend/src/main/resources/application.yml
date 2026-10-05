@@ -59,6 +59,17 @@ app:
   security:
     jwt:
       ttl-minutes: 480          # token lifetime (8 hours)
+    # ---- Google OAuth2 sign-in (authorization code flow) ----
+    # Leave client-id empty: the "Continue with Google" button and the
+    # /api/oauth2/authorization/google endpoint stay disabled.
+    # Set GOOGLE_CLIENT_ID / GOOGLE_CLIENT_SECRET to enable them.
+    google:
+      client-id: ${GOOGLE_CLIENT_ID:}
+      client-secret: ${GOOGLE_CLIENT_SECRET:}
+      # must be registered as an Authorized redirect URI in the Google Cloud console
+      redirect-uri: ${GOOGLE_REDIRECT_URI:http://localhost:8080/login/oauth2/code/google}
+      # where the browser lands after Google accepts the login
+      post-login-redirect: ${GOOGLE_POST_LOGIN_REDIRECT:http://localhost:5173/login}
   cache:
     product-ttl-minutes: 10     # Redis TTL for product lookups (5-15 min recommended)
     dashboard-ttl-minutes: 5    # Redis TTL for dashboard summaries

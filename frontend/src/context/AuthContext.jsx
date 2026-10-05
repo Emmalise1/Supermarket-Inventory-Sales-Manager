@@ -27,6 +27,25 @@ export function AuthProvider({ children }) {
     return data.user;
   }
 
+  /**
+   * Completes an OAuth2 (Google) sign-in: the backend redirected back with the
+   * JWT in the URL fragment, so the only thing left is to store it and load the
+   * profile from GET /api/auth/me - exactly what POST /api/auth/login returns.
+   */
+  async function loginWithToken(oauthToken) {
+    localStorage.setItem('token', oauthToken);
+    setToken(oauthToken);
+    try {
+      const { data } = await api.get('/auth/me');
+      localStorage.setItem('user', JSON.stringify(data));
+      setUser(data);
+      return data;
+    } catch (err) {
+      logout();
+      throw err;
+    }
+  }
+
   function logout() {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
@@ -39,7 +58,7 @@ export function AuthProvider({ children }) {
   }
 
   return (
-    <AuthContext.Provider value={{ token, user, login, logout, hasRole }}>
+    <AuthContext.Provider value={{ token, user, login, loginWithToken, logout, hasRole }}>
       {children}
     </AuthContext.Provider>
   );

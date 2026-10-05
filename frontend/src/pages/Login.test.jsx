@@ -35,6 +35,8 @@ describe('Login page', () => {
   beforeEach(() => {
     localStorage.clear();
     api.post.mockReset();
+    api.get.mockReset();
+    window.location.hash = '';
   });
 
   it('renders the login form and demo credentials', () => {
@@ -81,6 +83,53 @@ describe('Login page', () => {
     await waitFor(() =>
       expect(screen.getByText('Invalid email or password')).toBeInTheDocument()
     );
+    expect(localStorage.getItem('token')).toBeNull();
+  });
+
+  it('shows the Google button only when the backend reports it is configured', async () => {
+    api.get.mockResolvedValue({ data: { password: true, google: true } });
+
+    renderLogin();
+
+    expect(await screen.findByRole('button', { name: /continue with google/i })).toBeInTheDocument();
+    expect(api.get).toHaveBeenCalledWith('/auth/providers');
+  });
+
+  it('hides the Google button when OAuth2 credentials are not configured', async () => {
+    api.get.mockResolvedValue({ data: { password: true, google: false } });
+
+    renderLogin();
+
+    await waitFor(() => expect(api.get).toHaveBeenCalledWith('/auth/providers'));
+    expect(screen.queryByRole('button', { name: /continue with google/i })).toBeNull();
+  });
+
+  it('finishes the OAuth2 redirect: stores the JWT from the fragment and loads the profile', async () => {
+    window.location.hash = '#token=oauth-jwt-456';
+    api.get.mockImplementation((url) =>
+      url === '/auth/me'
+        ? Promise.resolve({
+            data: { id: 3, fullName: 'Google User', role: 'CASHIER', branchId: 2 },
+          })
+        : Promise.resolve({ data: { password: true, google: true } })
+    );
+
+    renderLogin();
+
+    await waitFor(() => expect(localStorage.getItem('token')).toBe('oauth-jwt-456'));
+    await waitFor(() => expect(screen.getByText('Dashboard page')).toBeInTheDocument());
+    // credentials must not stay in the address bar
+    expect(window.location.hash).toBe('');
+    expect(JSON.parse(localStorage.getItem('user')).fullName).toBe('Google User');
+  });
+
+  it('surfaces the error the OAuth2 redirect came back with', async () => {
+    window.location.hash = '#error=No account is registered for you';
+    api.get.mockResolvedValue({ data: { password: true, google: true } });
+
+    renderLogin();
+
+    expect(await screen.findByText('No account is registered for you')).toBeInTheDocument();
     expect(localStorage.getItem('token')).toBeNull();
   });
 });
