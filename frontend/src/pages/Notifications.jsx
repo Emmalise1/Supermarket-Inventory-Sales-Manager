@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Bell, TriangleAlert, ShoppingCart, Truck, RefreshCw } from 'lucide-react';
 import api, { errorMessage } from '../api/client';
 import { formatRelative } from '../utils/format';
+import emptyNotifications from '../assets/illustrations/empty-notifications.svg';
 
 function typeMeta(type) {
   if (type === 'LOW_STOCK') return { icon: TriangleAlert, tone: 'warn' };
@@ -85,7 +86,7 @@ export default function Notifications() {
 
         {items.length === 0 && (
           <div className="notif-empty">
-            <Bell size={56} strokeWidth={1.5} />
+            <img className="empty-illustration" src={emptyNotifications} alt="" />
             <p>
               You&apos;re all caught up. Notifications about low stock, sales,
               and system events will appear here.

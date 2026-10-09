@@ -3,6 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import api, { errorMessage } from '../api/client';
 import { formatPrice, cacheLabel } from '../utils/format';
 import { useAuth } from '../context/AuthContext';
+import emptySearch from '../assets/illustrations/empty-search.svg';
 
 export default function Products() {
   const { hasRole } = useAuth();
@@ -361,7 +362,12 @@ export default function Products() {
                 </tr>
               ))}
               {filtered.length === 0 && (
-                <tr><td colSpan="7" className="empty-state">No products match your search.</td></tr>
+                <tr>
+                  <td colSpan="7" className="empty-state">
+                    <img className="empty-illustration" src={emptySearch} alt="" />
+                    <div>No products match your search.</div>
+                  </td>
+                </tr>
               )}
             </tbody>
           </table>

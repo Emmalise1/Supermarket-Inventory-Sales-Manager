@@ -339,6 +339,7 @@ label.field input, label.field select, label.field textarea {
 
 .empty-state { text-align: center; color: var(--muted); padding: 34px 18px; }
 .empty-state h2 { color: var(--ink); }
+.empty-illustration { display: block; width: 170px; height: auto; margin: 0 auto; }
 
 .login-wrap {
   min-height: 100vh;

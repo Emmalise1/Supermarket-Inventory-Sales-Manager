@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
-import { X, ShoppingBasket } from 'lucide-react';
+import { X } from 'lucide-react';
 import api, { errorMessage } from '../api/client';
 import { formatPrice } from '../utils/format';
+import emptyCart from '../assets/illustrations/empty-cart.svg';
 
 export default function Pos() {
   const [products, setProducts] = useState([]);
@@ -142,7 +143,7 @@ export default function Pos() {
           <h2>Cart</h2>
           {cart.length === 0 ? (
             <div className="cart-empty">
-              <ShoppingBasket size={48} strokeWidth={1.5} />
+              <img className="empty-illustration" src={emptyCart} alt="" />
               <p>Cart is empty. Scan a barcode to begin.</p>
             </div>
           ) : (
