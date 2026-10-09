@@ -1,10 +1,5 @@
 import axios from 'axios';
 
-/**
- * Axios client for the Spring Boot REST API.
- * In local development Vite proxies /api to http://localhost:8080.
- * The JWT is attached to every request from localStorage.
- */
 const api = axios.create({
   baseURL: '/api',
   headers: { 'Content-Type': 'application/json' },
@@ -32,7 +27,6 @@ api.interceptors.response.use(
   }
 );
 
-/** Extracts a human-readable message from an API error. */
 export function errorMessage(error) {
   return (
     error?.response?.data?.message ||

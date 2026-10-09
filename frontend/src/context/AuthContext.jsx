@@ -3,11 +3,6 @@ import api from '../api/client';
 
 const AuthContext = createContext(null);
 
-/**
- * Authentication state: stores the OAuth2 JWT and the profile returned by
- * POST /api/auth/login. Tokens live only in localStorage on the client and
- * are sent as "Authorization: Bearer ..." - the backend never caches them.
- */
 export function AuthProvider({ children }) {
   const [token, setToken] = useState(() => localStorage.getItem('token'));
   const [user, setUser] = useState(() => {
@@ -27,11 +22,6 @@ export function AuthProvider({ children }) {
     return data.user;
   }
 
-  /**
-   * Completes an OAuth2 (Google) sign-in: the backend redirected back with the
-   * JWT in the URL fragment, so the only thing left is to store it and load the
-   * profile from GET /api/auth/me - exactly what POST /api/auth/login returns.
-   */
   async function loginWithToken(oauthToken) {
     localStorage.setItem('token', oauthToken);
     setToken(oauthToken);

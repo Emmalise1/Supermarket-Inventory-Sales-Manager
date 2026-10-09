@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import api, { errorMessage } from '../api/client';
 import { useAuth } from '../context/AuthContext';
 
-/** Branch management. Creating/editing is ADMIN only. */
 export default function Branches() {
   const { hasRole } = useAuth();
   const isAdmin = hasRole('ADMIN');

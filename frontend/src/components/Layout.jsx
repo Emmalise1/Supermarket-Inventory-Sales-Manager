@@ -4,7 +4,6 @@ import { useAuth } from '../context/AuthContext';
 import api from '../api/client';
 import BrandMark from './BrandMark';
 
-/** Sidebar + top bar shell rendered around every authenticated page. */
 export default function Layout() {
   const { user, logout, hasRole } = useAuth();
   const navigate = useNavigate();
@@ -67,7 +66,7 @@ export default function Layout() {
           </div>
           <div className="topbar-actions">
             <button className="bell" onClick={() => navigate('/notifications')}>
-              🔔{unread > 0 && <span className="count">{unread}</span>}
+              {unread > 0 && <span className="count">{unread}</span>}
             </button>
             <button className="btn secondary" onClick={handleLogout}>
               Log out

@@ -1,4 +1,3 @@
-/** Formatting helpers used across the UI (unit-tested in format.test.js). */
 
 export function formatMoney(amount) {
   const value = Number(amount ?? 0);

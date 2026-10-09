@@ -3,11 +3,6 @@ import api, { errorMessage } from '../api/client';
 import { formatMoney, cacheLabel } from '../utils/format';
 import { useAuth } from '../context/AuthContext';
 
-/**
- * Products page: catalog, CRUD, the Redis barcode lookup demo
- * (shows whether the answer came from Redis or MySQL) and the
- * measured performance comparison.
- */
 export default function Products() {
   const { hasRole } = useAuth();
   const canManage = hasRole('ADMIN', 'MANAGER');
@@ -19,13 +14,11 @@ export default function Products() {
   const [error, setError] = useState('');
   const [notice, setNotice] = useState('');
 
-  // barcode lookup panel
   const [barcode, setBarcode] = useState('');
   const [lookup, setLookup] = useState(null);
   const [benchmark, setBenchmark] = useState(null);
   const [lookupError, setLookupError] = useState('');
 
-  // CRUD form
   const emptyForm = {
     barcode: '', name: '', price: '', costPrice: '', quantityInStock: 0,
     lowStockThreshold: 10, categoryId: '', supplierId: '', branchId: '', active: true,

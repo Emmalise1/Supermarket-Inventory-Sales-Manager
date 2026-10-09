@@ -3,10 +3,6 @@ import api, { errorMessage } from '../api/client';
 import { formatDateTime } from '../utils/format';
 import { useAuth } from '../context/AuthContext';
 
-/**
- * Inventory page: movement history (audit trail), goods receiving and
- * stock adjustments (manager/admin only).
- */
 export default function Inventory() {
   const { hasRole } = useAuth();
   const canManage = hasRole('ADMIN', 'MANAGER');

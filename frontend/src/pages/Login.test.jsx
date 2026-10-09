@@ -121,7 +121,6 @@ describe('Login page', () => {
 
     await waitFor(() => expect(localStorage.getItem('token')).toBe('oauth-jwt-456'));
     await waitFor(() => expect(screen.getByText('Dashboard page')).toBeInTheDocument());
-    // credentials must not stay in the address bar
     expect(window.location.hash).toBe('');
     expect(JSON.parse(localStorage.getItem('user')).fullName).toBe('Google User');
   });

@@ -4,14 +4,6 @@ import { useAuth } from '../context/AuthContext';
 import api, { errorMessage } from '../api/client';
 import BrandMark from '../components/BrandMark';
 
-/**
- * Sign-in page.
- *
- * <p>Two methods: the usual email/password form, and the OAuth2 "Continue with Google"
- * button (shown only when the backend reports it is configured). The Google flow comes
- * back to this page with the JWT in the URL <em>fragment</em>, which is stored and then
- * replaced by the real profile from GET /api/auth/me.</p>
- */
 export default function Login() {
   const { login, loginWithToken } = useAuth();
   const navigate = useNavigate();
@@ -22,12 +14,10 @@ export default function Login() {
   const [googleEnabled, setGoogleEnabled] = useState(false);
 
   useEffect(() => {
-    // 1. finish an OAuth2 redirect: #token=... or #error=...
     const fragment = new URLSearchParams(window.location.hash.replace(/^#/, ''));
     const oauthToken = fragment.get('token');
     const oauthError = fragment.get('error');
     if (oauthToken || oauthError) {
-      // keep credentials out of the address bar and out of the history
       window.history.replaceState({}, '', window.location.pathname + window.location.search);
     }
     if (oauthError) {
@@ -44,7 +34,6 @@ export default function Login() {
       })();
     }
 
-    // 2. ask the backend which sign-in methods are configured
     (async () => {
       try {
         const response = await api.get('/auth/providers');

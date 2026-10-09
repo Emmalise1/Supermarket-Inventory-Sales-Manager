@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import api, { errorMessage } from '../api/client';
 import { formatMoney } from '../utils/format';
 
-/** Sales reports (admin/manager only - enforced by the backend too). */
 export default function Reports() {
   const [range, setRange] = useState({ from: '', to: '' });
   const [report, setReport] = useState(null);

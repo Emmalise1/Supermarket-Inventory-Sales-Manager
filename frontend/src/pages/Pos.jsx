@@ -2,11 +2,6 @@ import { useEffect, useState } from 'react';
 import api, { errorMessage } from '../api/client';
 import { formatMoney } from '../utils/format';
 
-/**
- * POS / Sales screen: scan or type a barcode (served by the Redis cache),
- * build the cart and check out. The backend validates stock and prevents
- * negative stock.
- */
 export default function Pos() {
   const [products, setProducts] = useState([]);
   const [cart, setCart] = useState([]);

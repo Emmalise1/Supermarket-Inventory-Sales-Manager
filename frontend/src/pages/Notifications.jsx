@@ -2,10 +2,6 @@ import { useEffect, useState } from 'react';
 import api, { errorMessage } from '../api/client';
 import { formatDateTime } from '../utils/format';
 
-/**
- * Notifications produced asynchronously: Spring Boot publishes events to
- * RabbitMQ, a consumer stores them in MongoDB, this page displays them.
- */
 export default function Notifications() {
   const [items, setItems] = useState([]);
   const [error, setError] = useState('');

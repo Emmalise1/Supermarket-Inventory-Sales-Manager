@@ -3,10 +3,6 @@ import api, { errorMessage } from '../api/client';
 import { formatMoney } from '../utils/format';
 import { useAuth } from '../context/AuthContext';
 
-/**
- * Dashboard summary. The backend caches this summary in Redis for 5 minutes
- * - the "source" badge shows whether the answer came from Redis or MySQL.
- */
 export default function Dashboard() {
   const { user } = useAuth();
   const [data, setData] = useState(null);
