@@ -270,6 +270,11 @@ label.field input, label.field select, label.field textarea {
 }
 .form-row { display: flex; gap: 12px; }
 .form-row label.field { flex: 1; }
+.toolbar { display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; margin-bottom: 18px; }
+.toolbar label.field { margin-bottom: 0; }
+.toolbar-search { flex: 1; min-width: 260px; }
+.toolbar .field select { min-width: 150px; }
+.toolbar-action { margin-left: auto; }
 
 .btn {
   background: var(--brand);
