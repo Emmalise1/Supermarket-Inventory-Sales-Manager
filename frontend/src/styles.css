@@ -54,7 +54,9 @@ a { color: var(--brand); text-decoration: none; }
   color: #c6cfe6;
   padding: 9px 12px;
   border-radius: 8px;
-  display: block;
+  display: flex;
+  align-items: center;
+  gap: 10px;
   font-size: 14px;
 }
 .sidebar a:hover { background: rgba(255, 255, 255, 0.08); color: #fff; }
@@ -91,6 +93,87 @@ a { color: var(--brand); text-decoration: none; }
 }
 
 .topbar-actions { display: flex; align-items: center; gap: 12px; }
+
+.branch-select {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--muted);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 7px 10px;
+  background: #fff;
+}
+.branch-select select {
+  border: none;
+  background: transparent;
+  font-size: 14px;
+  color: var(--ink);
+  outline: none;
+  cursor: pointer;
+}
+
+.profile { position: relative; }
+.profile-trigger {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: none;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 4px 10px 4px 4px;
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--ink);
+}
+.profile-trigger:hover { background: #f8faff; }
+.avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--brand);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 700;
+}
+.profile-name {
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.dropdown {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 8px);
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.12);
+  min-width: 210px;
+  padding: 6px;
+  z-index: 40;
+}
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  background: none;
+  border: none;
+  padding: 9px 10px;
+  border-radius: 7px;
+  font-size: 14px;
+  color: var(--ink);
+  cursor: pointer;
+  text-align: left;
+}
+.dropdown-item:hover { background: #f1f4fb; }
+.dropdown-item.danger { color: var(--danger); }
+.dropdown-sep { height: 1px; background: var(--line); margin: 6px 4px; }
 
 .bell {
   position: relative;
