@@ -223,11 +223,32 @@ a { color: var(--brand); text-decoration: none; }
   border-radius: var(--radius);
   padding: 16px 18px;
 }
-.stat .label { color: var(--muted); font-size: 13px; }
+.stat .label { color: var(--muted); font-size: 13px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .stat .value { font-size: 26px; font-weight: 700; margin-top: 6px; }
 .stat.accent .value { color: var(--brand); }
 .stat.good .value { color: var(--accent); }
 .stat.warn .value { color: var(--warn); }
+.stat-icon { color: #9aa6c4; flex-shrink: 0; }
+.delta { display: flex; align-items: center; gap: 6px; font-size: 12px; margin-top: 6px; color: var(--muted); }
+.delta .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); }
+.delta.down .dot { background: var(--danger); }
+
+.quick-actions { display: flex; gap: 12px; margin: 18px 0; flex-wrap: wrap; }
+.quick-actions .btn { display: inline-flex; align-items: center; gap: 8px; }
+
+.card-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+.card-head h2 { margin: 0; }
+.days-select {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 7px 10px;
+  font-size: 14px;
+  color: var(--ink);
+  background: #fff;
+  cursor: pointer;
+}
+.chart-box { width: 100%; }
+.num { text-align: right; }
 
 table { width: 100%; border-collapse: collapse; font-size: 14px; }
 th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); }
