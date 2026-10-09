@@ -1,0 +1,35 @@
+### 1. Health check
+GET http://localhost:8080/actuator/health
+
+### 2. Login
+# @name login
+POST http://localhost:8080/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@supermarket.rw",
+  "password": "Admin@123"
+}
+
+> {%
+    client.global.set("token", response.body.token);
+%}
+
+### 3. First barcode lookup — cacheHit: false
+GET http://localhost:8080/api/products/barcode/6001000000017
+Authorization: Bearer {{token}}
+
+### 4. Second barcode lookup — cacheHit: true
+GET http://localhost:8080/api/products/barcode/6001000000017
+Authorization: Bearer {{token}}
+
+### 5. Benchmark
+GET http://localhost:8080/api/products/barcode/6001000000017/benchmark?iterations=20
+Authorization: Bearer {{token}}
+
+### 6. Audit log (MongoDB proof)
+GET http://localhost:8080/api/audit
+Authorization: Bearer {{token}}
+
+### 7. RBAC test — no token, expect 401
+GET http://localhost:8080/api/products/barcode/6001000000017

@@ -1,10 +1,6 @@
 import { Navigate, Outlet } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
-/**
- * Route guard: requires a JWT, and optionally one of the given RBAC roles.
- * Mirrors the @PreAuthorize rules enforced by the backend.
- */
 export default function ProtectedRoute({ roles }) {
   const { token, user, hasRole } = useAuth();
 

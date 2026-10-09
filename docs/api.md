@@ -1,8 +1,8 @@
 # REST API reference
 
 Base URL (local): `http://localhost:8080/api`
-All endpoints except `POST /api/auth/login` require
-`Authorization: Bearer <JWT>`.
+All endpoints except `POST /api/auth/login`, `GET /api/auth/providers` and the two
+OAuth2 endpoints require `Authorization: Bearer <JWT>`.
 
 Roles: **ADMIN** (all branches), **MANAGER** (own branch, management features),
 **CASHIER** (own branch, selling).
@@ -12,7 +12,15 @@ Roles: **ADMIN** (all branches), **MANAGER** (own branch, management features),
 | Method | Path | Access | Description |
 |---|---|---|---|
 | POST | `/auth/login` | public | Email/password → OAuth2 JWT + profile |
+| GET | `/auth/providers` | public | Which sign-in methods are configured (`{password, google}`) |
 | GET | `/auth/me` | authenticated | Profile from the current token |
+| GET | `/oauth2/authorization/google` | public | Starts the OAuth2 authorization code flow (302 → Google) |
+| GET | `/login/oauth2/code/google` | public | Google's callback → issues the JWT, redirects to `…/login#token=` |
+
+The two OAuth2 endpoints are only active while `GOOGLE_CLIENT_ID` /
+`GOOGLE_CLIENT_SECRET` are set; otherwise they behave like any other unknown
+endpoint (`401`). A Google account is never auto-provisioned: its e-mail must
+already belong to an active local account, otherwise the flow is refused.
 
 ## Products (Redis caching showcase)
 

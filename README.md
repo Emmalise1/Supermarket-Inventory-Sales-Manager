@@ -43,7 +43,7 @@ Spring Boot  →  RabbitMQ  →  Consumers  →  Notifications / Audit side effe
 | Layer | Technologies |
 |---|---|
 | Frontend | React, Vite, Axios, React Router, plain CSS |
-| Backend | Java 17+, Spring Boot, Spring Web, Spring Data JPA, Spring Data MongoDB, Spring Data Redis, Spring AMQP (RabbitMQ), Spring Security, OAuth2 (JWT resource server), Bean Validation, Actuator |
+| Backend | Java 17+, Spring Boot, Spring Web, Spring Data JPA, Spring Data MongoDB, Spring Data Redis, Spring AMQP (RabbitMQ), Spring Security, OAuth2 (JWT resource server) + OAuth2 client ("Continue with Google"), Bean Validation, Actuator |
 | Databases | MySQL (primary), MongoDB (documents) |
 | Messaging | RabbitMQ |
 | Cache | Redis |
@@ -84,14 +84,9 @@ mvn spring-boot:run -Dspring-boot.run.arguments="--spring.datasource.password="
 
 On first start the tables are created automatically (`ddl-auto: update`) and
 demo data is seeded (branches, users, categories, suppliers, products).
-
-**Demo accounts:**
-
-| Email | Password | Role | Branch |
-|---|---|---|---|
-| `admin@supermarket.rw` | `Admin@123` | ADMIN | all branches |
-| `manager@supermarket.rw` | `Manager@123` | MANAGER | Kigali Main |
-| `cashier@supermarket.rw` | `Cashier@123` | CASHIER | Kigali Main |
+The seeded login accounts are recorded in
+[docs/local-development.md](docs/local-development.md) - they are never
+shown in the application UI.
 
 ### 4.2 Frontend (React + Vite)
 
@@ -117,10 +112,69 @@ Every service can be reconfigured without editing code:
 | `REDIS_HOST` / `REDIS_PORT` | `localhost` / `6379` | Redis |
 | `JWT_SECRET` | dev-only default in `application.yml` | OAuth2 token signing key |
 | `CORS_ALLOWED_ORIGINS` | `http://localhost:5173,http://localhost:3000` | Frontend origins |
+| `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | empty (Google sign-in hidden) | OAuth2 client credentials |
+| `GOOGLE_REDIRECT_URI` | `http://localhost:8080/login/oauth2/code/google` | Redirect URI registered in Google Cloud |
+| `GOOGLE_POST_LOGIN_REDIRECT` | `http://localhost:5173/login` | Page the browser lands on after Google |
 
 > The defaults are **local development values only**. For any real deployment,
 > set every secret (especially `JWT_SECRET`, database passwords) as an
 > environment variable - nothing production-grade is committed.
+
+### 4.4 Authentication (OAuth2)
+
+Two sign-in methods produce the **same** stateless HS256 JWT, so RBAC, branch scoping
+and caching behave identically afterwards:
+
+| Method | Endpoint | Availability |
+|---|---|---|
+| Email + password (BCrypt) | `POST /api/auth/login` | always |
+| **Google OAuth2**, authorization code flow | `GET /api/oauth2/authorization/google` | when `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` are set |
+
+The login page asks `GET /api/auth/providers` which methods are configured, so the
+`Continue with Google` button only appears when OAuth2 is switched on.
+
+**Enabling it**
+
+1. In [Google Cloud Console](https://console.cloud.google.com/apis/credentials) create an
+   **OAuth client ID** of type *Web application*.
+2. Authorize this redirect URI: `http://localhost:8080/login/oauth2/code/google`
+   (the value of `GOOGLE_REDIRECT_URI`).
+3. Export the credentials and start the backend:
+
+```bash
+export GOOGLE_CLIENT_ID=xxxxx.apps.googleusercontent.com
+export GOOGLE_CLIENT_SECRET=GOCSPX-...
+cd backend && mvn spring-boot:run
+```
+
+**Flow**
+
+```
+Browser                          Backend                        Google
+   │ GET /api/oauth2/authorization/google                        │
+   │────────────────────────────────────────────────────────────>│
+   │<302 Location: accounts.google.com/o/oauth2/v2/auth?...      │
+   │                                                             │
+   │ consent screen ────────────────────────────────────────────>│
+   │<302 back to /login/oauth2/code/google?code=...&state=...    │
+   │                                                             │
+   │ GET /login/oauth2/code/google                               │
+   │────────────────────────────────────────────────────────────>│
+   │<302 /login#token=<JWT>   (code exchanged server-side)       │
+   │                                                             │
+   │ GET /api/auth/me  ── profile for the SPA ──────────────────>│
+```
+
+Security properties:
+
+- **No account is ever auto-provisioned from the external IdP.** The Google e-mail must
+  already belong to an active local account, otherwise the login is refused - only an
+  admin creates users and assigns roles, so RBAC stays under admin control.
+- The JWT travels in the URL **fragment** (`#token=`), which browsers never send to a
+  server, so it never ends up in access or proxy logs.
+- OAuth2 endpoints live in their own filter chain, so adding `oauth2Login()` cannot change
+  how the REST API answers unauthenticated calls (still `401`, never a login redirect) -
+  this is asserted by `GoogleOAuth2LoginTest`.
 
 ## 5. Redis caching (the additional technology)
 
@@ -170,10 +224,10 @@ See [docs/redis-caching.md](docs/redis-caching.md).
 ## 6. Testing
 
 ```bash
-# Backend: 38 tests (unit, security/RBAC, integration)
+# Backend: 50 tests (unit, security/RBAC, OAuth2, integration)
 cd backend && mvn test
 
-# Frontend: 12 tests
+# Frontend: 16 tests
 cd frontend && npm test
 ```
 
@@ -181,7 +235,9 @@ Covered: Redis cache hit/miss/invalidation, negative-stock prevention,
 branch-level authorization, RBAC over a real security filter chain,
 JWT round-trip, RabbitMQ publish + broker-down fallback, JPA repository
 integration (H2), a full Spring Boot context integration test
-(login → token → barcode lookup end-to-end), login flow and route guards.
+(login → token → barcode lookup end-to-end), login flow, route guards and the
+Google OAuth2 authorization code flow (redirect target, provider discovery, and
+the guarantee that the API still answers 401 to anonymous callers).
 
 ## 7. DevOps (GitHub Actions, no Docker)
 

@@ -1,16 +1,48 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { errorMessage } from '../api/client';
+import api, { errorMessage } from '../api/client';
+import BrandMark from '../components/BrandMark';
 
-/** Email/password login -> OAuth2 JWT from the Spring Boot backend. */
 export default function Login() {
-  const { login } = useAuth();
+  const { login, loginWithToken } = useAuth();
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [googleEnabled, setGoogleEnabled] = useState(false);
+
+  useEffect(() => {
+    const fragment = new URLSearchParams(window.location.hash.replace(/^#/, ''));
+    const oauthToken = fragment.get('token');
+    const oauthError = fragment.get('error');
+    if (oauthToken || oauthError) {
+      window.history.replaceState({}, '', window.location.pathname + window.location.search);
+    }
+    if (oauthError) {
+      setError(oauthError);
+    }
+    if (oauthToken) {
+      (async () => {
+        try {
+          await loginWithToken(oauthToken);
+          navigate('/dashboard');
+        } catch (err) {
+          setError(errorMessage(err));
+        }
+      })();
+    }
+
+    (async () => {
+      try {
+        const response = await api.get('/auth/providers');
+        setGoogleEnabled(!!response?.data?.google);
+      } catch {
+        setGoogleEnabled(false);
+      }
+    })();
+  }, []);
 
   async function handleSubmit(event) {
     event.preventDefault();
@@ -29,6 +61,9 @@ export default function Login() {
   return (
     <div className="login-wrap">
       <form className="login-card" onSubmit={handleSubmit}>
+        <div className="login-mark">
+          <BrandMark size={40} />
+        </div>
         <h1>SUPERmarket</h1>
         <p className="sub">Inventory &amp; Sales Manager - sign in to continue</p>
 
@@ -61,15 +96,16 @@ export default function Login() {
           {loading ? 'Signing in...' : 'Sign in'}
         </button>
 
-        <div className="demo-credentials">
-          Demo accounts (seeded on first run):
-          <br />
-          <code>admin@supermarket.rw / Admin@123</code> (ADMIN)
-          <br />
-          <code>manager@supermarket.rw / Manager@123</code> (MANAGER)
-          <br />
-          <code>cashier@supermarket.rw / Cashier@123</code> (CASHIER)
-        </div>
+        {googleEnabled && (
+          <button
+            className="btn secondary google-btn"
+            type="button"
+            style={{ width: '100%', marginTop: 10 }}
+            onClick={() => window.location.assign('/api/oauth2/authorization/google')}
+          >
+            Continue with Google
+          </button>
+        )}
       </form>
     </div>
   );

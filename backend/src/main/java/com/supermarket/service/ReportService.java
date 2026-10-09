@@ -2,6 +2,7 @@ package com.supermarket.service;
 
 import com.supermarket.dto.ReportDtos.SalesReportDto;
 import com.supermarket.dto.ReportDtos.TopProductDto;
+import com.supermarket.dto.ReportDtos.TrendPointDto;
 import com.supermarket.repository.SaleItemRepository;
 import com.supermarket.repository.SaleRepository;
 import com.supermarket.security.AuthContext;
@@ -16,7 +17,9 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /** Sales reports (always read from MySQL - reporting needs fresh data). */
 @Service
@@ -77,6 +80,57 @@ public class ReportService {
 
         return new SalesReportDto(
                 fromDate.toString(), toDate.toString(), scope, count, revenue, average, top);
+    }
+
+    @Transactional(readOnly = true)
+    public List<TrendPointDto> trend(int days) {
+        int window = Math.max(1, Math.min(days, 90));
+        ZoneId zone = ZoneId.systemDefault();
+        LocalDate today = LocalDate.now(zone);
+        LocalDate start = today.minusDays(window - 1L);
+        Instant from = start.atStartOfDay(zone).toInstant();
+
+        Map<LocalDate, BigDecimal> revenueByDay = new HashMap<>();
+        Map<LocalDate, Long> countByDay = new HashMap<>();
+        for (Object[] row : saleRepository.dailyRevenueSince(from)) {
+            LocalDate date = toLocalDate(row[0]);
+            if (date == null) {
+                continue;
+            }
+            revenueByDay.put(date, toBigDecimal(row[1]));
+            countByDay.put(date, row[2] == null ? 0L : ((Number) row[2]).longValue());
+        }
+
+        List<TrendPointDto> points = new ArrayList<>(window);
+        for (LocalDate date = start; !date.isAfter(today); date = date.plusDays(1)) {
+            points.add(new TrendPointDto(date.toString(),
+                    revenueByDay.getOrDefault(date, BigDecimal.ZERO),
+                    countByDay.getOrDefault(date, 0L)));
+        }
+        return points;
+    }
+
+    private static LocalDate toLocalDate(Object value) {
+        if (value instanceof LocalDate date) {
+            return date;
+        }
+        if (value instanceof java.sql.Date date) {
+            return date.toLocalDate();
+        }
+        if (value instanceof java.util.Date date) {
+            return date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        }
+        return null;
+    }
+
+    private static BigDecimal toBigDecimal(Object value) {
+        if (value instanceof BigDecimal decimal) {
+            return decimal;
+        }
+        if (value instanceof Number number) {
+            return BigDecimal.valueOf(number.doubleValue());
+        }
+        return BigDecimal.ZERO;
     }
 
     private static LocalDate parseOrDefault(String value, LocalDate fallback) {

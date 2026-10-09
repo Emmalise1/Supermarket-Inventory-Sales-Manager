@@ -1,12 +1,9 @@
 import { useEffect, useState } from 'react';
+import { Info } from 'lucide-react';
 import api, { errorMessage } from '../api/client';
 import { formatDateTime } from '../utils/format';
 import { useAuth } from '../context/AuthContext';
 
-/**
- * Inventory page: movement history (audit trail), goods receiving and
- * stock adjustments (manager/admin only).
- */
 export default function Inventory() {
   const { hasRole } = useAuth();
   const canManage = hasRole('ADMIN', 'MANAGER');
@@ -29,6 +26,16 @@ export default function Inventory() {
   }
 
   useEffect(load, []);
+
+  function stockStatus(product) {
+    if (product.quantityInStock === 0) return 'out';
+    if (product.quantityInStock <= 20) return 'low';
+    return 'healthy';
+  }
+
+  const healthyCount = products.filter((p) => stockStatus(p) === 'healthy').length;
+  const lowCount = products.filter((p) => stockStatus(p) === 'low').length;
+  const outCount = products.filter((p) => stockStatus(p) === 'out').length;
 
   async function submitReceipt(event) {
     event.preventDefault();
@@ -75,6 +82,21 @@ export default function Inventory() {
       {error && <div className="alert error">{error}</div>}
       {notice && <div className="alert success">{notice}</div>}
 
+      <div className="grid cols-3">
+        <div className="stat good">
+          <div className="label">Healthy</div>
+          <div className="value num">{healthyCount}</div>
+        </div>
+        <div className="stat warn">
+          <div className="label">Low Stock</div>
+          <div className="value num">{lowCount}</div>
+        </div>
+        <div className="stat danger">
+          <div className="label">Out of Stock</div>
+          <div className="value num">{outCount}</div>
+        </div>
+      </div>
+
       {canManage && (
         <div className="grid cols-2">
           <form className="card" onSubmit={submitReceipt}>
@@ -106,7 +128,15 @@ export default function Inventory() {
           </form>
 
           <form className="card" onSubmit={submitAdjustment}>
-            <h2>Stock adjustment (+/-)</h2>
+            <h2>
+              Stock adjustment (+/-)
+              <span className="info-tip" tabIndex={0}>
+                <Info size={15} strokeWidth={2} />
+                <span className="tooltip-text">
+                  An adjustment can never make stock negative - the backend rejects it.
+                </span>
+              </span>
+            </h2>
             <label className="field">
               Product
               <select value={adjustment.productId}
@@ -128,9 +158,6 @@ export default function Inventory() {
               </label>
             </div>
             <button className="btn" type="submit">Apply adjustment</button>
-            <p className="subtitle" style={{ marginTop: 10 }}>
-              An adjustment can never make stock negative - the backend rejects it.
-            </p>
           </form>
         </div>
       )}

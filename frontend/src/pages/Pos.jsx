@@ -1,12 +1,9 @@
 import { useEffect, useState } from 'react';
+import { X } from 'lucide-react';
 import api, { errorMessage } from '../api/client';
-import { formatMoney } from '../utils/format';
+import { formatPrice } from '../utils/format';
+import emptyCart from '../assets/illustrations/empty-cart.svg';
 
-/**
- * POS / Sales screen: scan or type a barcode (served by the Redis cache),
- * build the cart and check out. The backend validates stock and prevents
- * negative stock.
- */
 export default function Pos() {
   const [products, setProducts] = useState([]);
   const [cart, setCart] = useState([]);
@@ -22,6 +19,7 @@ export default function Pos() {
   }, []);
 
   const total = cart.reduce((sum, line) => sum + line.unitPrice * line.quantity, 0);
+  const discount = 0;
 
   async function addByBarcode(event) {
     event.preventDefault();
@@ -73,6 +71,10 @@ export default function Pos() {
     );
   }
 
+  function removeLine(productId) {
+    setCart((current) => current.filter((line) => line.productId !== productId));
+  }
+
   async function checkout() {
     setError('');
     setSuccess('');
@@ -82,7 +84,7 @@ export default function Pos() {
         branchId: cart[0]?.branchId,
         items: cart.map((line) => ({ productId: line.productId, quantity: line.quantity })),
       });
-      setSuccess(`Sale ${data.saleNumber} recorded: ${formatMoney(data.totalAmount)} (${data.itemCount} items)`);
+      setSuccess(`Sale ${data.saleNumber} recorded: ${formatPrice(data.totalAmount)} (${data.itemCount} items)`);
       setCart([]);
       const res = await api.get('/products');
       setProducts(res.data.filter((p) => p.active));
@@ -96,74 +98,100 @@ export default function Pos() {
   return (
     <div className="page">
       <h1>POS / Sales</h1>
-      <p className="subtitle">Scan barcodes (answered by Redis) and check out. Stock is validated server-side.</p>
+      <p className="subtitle">Scan barcodes and check out. Stock is validated server-side.</p>
 
       {error && <div className="alert error">{error}</div>}
       {success && <div className="alert success">{success}</div>}
 
       <div className="pos-grid">
-        <div className="card">
-          <h2>Add items</h2>
-          <form onSubmit={addByBarcode} className="form-row">
-            <label className="field" style={{ flex: 1 }}>
-              Barcode
-              <input
-                value={barcode}
-                onChange={(e) => setBarcode(e.target.value)}
-                placeholder="Scan or type a barcode, press Enter"
-                autoFocus
-              />
-            </label>
-            <button className="btn" type="submit" style={{ alignSelf: 'flex-end' }}>Add</button>
+        <div className="pos-left">
+          <form className="pos-scan" onSubmit={addByBarcode}>
+            <input
+              className="pos-scan-input"
+              value={barcode}
+              onChange={(e) => setBarcode(e.target.value)}
+              placeholder="Scan or type a barcode, press Enter"
+              autoFocus
+            />
+            <button className="btn" type="submit">Add</button>
           </form>
 
-          <div className="table-wrap">
-            <table>
-              <thead>
-                <tr><th>Barcode</th><th>Name</th><th>Price</th><th>Stock</th><th></th></tr>
-              </thead>
-              <tbody>
-                {products.map((p) => (
-                  <tr key={p.id} style={{ cursor: 'pointer' }} onClick={() => addProduct(p, false)}>
-                    <td>{p.barcode}</td>
-                    <td>{p.name}</td>
-                    <td>{formatMoney(p.price)}</td>
-                    <td>{p.quantityInStock}</td>
-                    <td><button className="btn small secondary">Add</button></td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <div className="card">
+            <h2>Products</h2>
+            <div className="table-wrap">
+              <table>
+                <thead>
+                  <tr><th>Barcode</th><th>Name</th><th>Price</th><th>Stock</th><th></th></tr>
+                </thead>
+                <tbody>
+                  {products.map((p) => (
+                    <tr key={p.id} style={{ cursor: 'pointer' }} onClick={() => addProduct(p, false)}>
+                      <td>{p.barcode}</td>
+                      <td>{p.name}</td>
+                      <td>{formatPrice(p.price)}</td>
+                      <td>{p.quantityInStock}</td>
+                      <td><button className="btn small secondary">Add</button></td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
 
-        <div className="card">
+        <div className="card pos-cart">
           <h2>Cart</h2>
           {cart.length === 0 ? (
-            <p className="subtitle">Cart is empty.</p>
+            <div className="cart-empty">
+              <img className="empty-illustration" src={emptyCart} alt="" />
+              <p>Cart is empty. Scan a barcode to begin.</p>
+            </div>
           ) : (
             <>
               {cart.map((line) => (
                 <div className="cart-line" key={line.productId}>
-                  <span className="name">
-                    {line.name}
-                    {line.fromCache && <span className="badge cache" style={{ marginLeft: 8 }}>Redis</span>}
-                    <br />
-                    <small style={{ color: '#67718b' }}>
-                      {formatMoney(line.unitPrice)} · stock {line.stock}
-                    </small>
-                  </span>
-                  <button className="btn small secondary" onClick={() => changeQty(line.productId, -1)}>-</button>
-                  <strong>{line.quantity}</strong>
-                  <button className="btn small secondary" onClick={() => changeQty(line.productId, 1)}>+</button>
-                  <span style={{ width: 90, textAlign: 'right' }}>{formatMoney(line.unitPrice * line.quantity)}</span>
+                  <div className="cart-line-top">
+                    <span className="name">
+                      {line.name}
+                      {line.fromCache && <span className="badge cache" style={{ marginLeft: 8 }}>Redis</span>}
+                    </span>
+                    <span className="line-total">{formatPrice(line.unitPrice * line.quantity)}</span>
+                  </div>
+                  <div className="cart-line-bottom">
+                    <span className="meta">{formatPrice(line.unitPrice)} each</span>
+                    <div className="qty-controls">
+                      <button className="btn small secondary" onClick={() => changeQty(line.productId, -1)}>-</button>
+                      <strong>{line.quantity}</strong>
+                      <button className="btn small secondary" onClick={() => changeQty(line.productId, 1)}>+</button>
+                      <button
+                        className="btn small danger"
+                        aria-label={`Remove ${line.name}`}
+                        onClick={() => removeLine(line.productId)}
+                      >
+                        <X size={14} strokeWidth={2} />
+                      </button>
+                    </div>
+                  </div>
                 </div>
               ))}
+
+              <div className="cart-summary">
+                <div className="cart-row">
+                  <span>Subtotal</span>
+                  <span>{formatPrice(total)}</span>
+                </div>
+                <div className="cart-row">
+                  <span>Discount</span>
+                  <span>{formatPrice(discount)}</span>
+                </div>
+              </div>
+
               <div className="cart-total">
                 <span>Total</span>
-                <span>{formatMoney(total)}</span>
+                <span>{formatPrice(total)}</span>
               </div>
-              <button className="btn" style={{ width: '100%', marginTop: 14 }} onClick={checkout}
+
+              <button className="btn cart-checkout" onClick={checkout}
                 disabled={loading || cart.length === 0}>
                 {loading ? 'Processing...' : 'Complete sale'}
               </button>
