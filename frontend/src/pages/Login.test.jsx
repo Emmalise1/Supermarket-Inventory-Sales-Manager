@@ -39,11 +39,14 @@ describe('Login page', () => {
     window.location.hash = '';
   });
 
-  it('renders the login form and demo credentials', () => {
+  it('renders the login form without any demo credentials', () => {
     renderLogin();
     expect(screen.getByText('SUPERmarket')).toBeInTheDocument();
     expect(screen.getByPlaceholderText('admin@supermarket.rw')).toBeInTheDocument();
-    expect(screen.getByText(/admin@supermarket\.rw/)).toBeInTheDocument();
+    expect(screen.queryByText(/Demo accounts/)).toBeNull();
+    expect(screen.queryByText(/Admin@123/)).toBeNull();
+    expect(screen.queryByText(/Manager@123/)).toBeNull();
+    expect(screen.queryByText(/Cashier@123/)).toBeNull();
   });
 
   it('stores the JWT and navigates on successful login', async () => {

@@ -84,14 +84,9 @@ mvn spring-boot:run -Dspring-boot.run.arguments="--spring.datasource.password="
 
 On first start the tables are created automatically (`ddl-auto: update`) and
 demo data is seeded (branches, users, categories, suppliers, products).
-
-**Demo accounts:**
-
-| Email | Password | Role | Branch |
-|---|---|---|---|
-| `admin@supermarket.rw` | `Admin@123` | ADMIN | all branches |
-| `manager@supermarket.rw` | `Manager@123` | MANAGER | Kigali Main |
-| `cashier@supermarket.rw` | `Cashier@123` | CASHIER | Kigali Main |
+The seeded login accounts are recorded in
+[docs/local-development.md](docs/local-development.md) - they are never
+shown in the application UI.
 
 ### 4.2 Frontend (React + Vite)
 

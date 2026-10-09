@@ -113,16 +113,6 @@ export default function Login() {
             Continue with Google
           </button>
         )}
-
-        <div className="demo-credentials">
-          Demo accounts (seeded on first run):
-          <br />
-          <code>admin@supermarket.rw / Admin@123</code> (ADMIN)
-          <br />
-          <code>manager@supermarket.rw / Manager@123</code> (MANAGER)
-          <br />
-          <code>cashier@supermarket.rw / Cashier@123</code> (CASHIER)
-        </div>
       </form>
     </div>
   );
