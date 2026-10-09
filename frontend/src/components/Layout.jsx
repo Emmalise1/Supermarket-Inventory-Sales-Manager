@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import api from '../api/client';
+import BrandMark from './BrandMark';
 
 /** Sidebar + top bar shell rendered around every authenticated page. */
 export default function Layout() {
@@ -33,10 +34,11 @@ export default function Layout() {
     <div className="app-shell">
       <aside className="sidebar">
         <div className="brand">
-          SUPER<span>market</span>
-          <div style={{ fontSize: 11, fontWeight: 400, color: '#8fa0c4' }}>
-            Inventory &amp; Sales
+          <div className="brand-row">
+            <BrandMark size={24} />
+            <span className="brand-name">SUPER<span>market</span></span>
           </div>
+          <div className="brand-sub">Inventory &amp; Sales</div>
         </div>
 
         <div className="nav-section">Operations</div>

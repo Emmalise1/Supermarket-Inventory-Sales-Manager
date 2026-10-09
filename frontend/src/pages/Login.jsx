@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import api, { errorMessage } from '../api/client';
+import BrandMark from '../components/BrandMark';
 
 /**
  * Sign-in page.
@@ -71,6 +72,9 @@ export default function Login() {
   return (
     <div className="login-wrap">
       <form className="login-card" onSubmit={handleSubmit}>
+        <div className="login-mark">
+          <BrandMark size={40} />
+        </div>
         <h1>SUPERmarket</h1>
         <p className="sub">Inventory &amp; Sales Manager - sign in to continue</p>
 
