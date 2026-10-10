@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import api, { errorMessage } from '../api/client';
 import { formatDateTime } from '../utils/format';
 
-/** Audit history from MongoDB (admin/manager only). */
 export default function Audit() {
   const [entries, setEntries] = useState([]);
   const [error, setError] = useState('');

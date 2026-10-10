@@ -35,4 +35,10 @@ public final class ReportDtos {
             long quantitySold,
             BigDecimal revenue) {
     }
+
+    public record TrendPointDto(
+            String date,
+            BigDecimal revenue,
+            long salesCount) {
+    }
 }

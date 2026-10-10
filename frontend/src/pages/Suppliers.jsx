@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import api, { errorMessage } from '../api/client';
 import { useAuth } from '../context/AuthContext';
 
-/** Supplier management. */
 export default function Suppliers() {
   const { hasRole } = useAuth();
   const canManage = hasRole('ADMIN', 'MANAGER');

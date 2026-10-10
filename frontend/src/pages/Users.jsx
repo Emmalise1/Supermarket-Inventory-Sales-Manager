@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import api, { errorMessage } from '../api/client';
 import { formatDateTime } from '../utils/format';
 
-/** User management (ADMIN only). Passwords are write-only. */
 export default function Users() {
   const [users, setUsers] = useState([]);
   const [branches, setBranches] = useState([]);

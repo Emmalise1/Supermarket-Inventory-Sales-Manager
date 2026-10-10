@@ -13,10 +13,6 @@ import Users from './pages/Users';
 import Branches from './pages/Branches';
 import Audit from './pages/Audit';
 
-/**
- * Application routes. Every page except /login requires a JWT;
- * role-restricted pages mirror the backend @PreAuthorize rules.
- */
 export default function App() {
   return (
     <Routes>

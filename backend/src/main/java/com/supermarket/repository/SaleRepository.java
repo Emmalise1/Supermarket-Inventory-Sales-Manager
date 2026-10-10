@@ -28,4 +28,9 @@ public interface SaleRepository extends JpaRepository<Sale, Long> {
     long countByCreatedAtBetween(Instant from, Instant to);
 
     long countByBranchIdAndCreatedAtBetween(Long branchId, Instant from, Instant to);
+
+    @Query("select cast(s.createdAt as date), coalesce(sum(s.totalAmount), 0), count(s) " +
+            "from Sale s where s.createdAt >= :from " +
+            "group by cast(s.createdAt as date) order by cast(s.createdAt as date)")
+    List<Object[]> dailyRevenueSince(@Param("from") Instant from);
 }

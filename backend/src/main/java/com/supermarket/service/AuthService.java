@@ -53,4 +53,31 @@ public class AuthService {
 
         return new TokenResponse(token, "Bearer", ttlMinutes * 60, UserDto.from(user));
     }
+
+    /**
+     * Completes an OAuth2 (Google) sign-in for an address that already belongs to a local
+     * account. Accounts are never created from an external identity provider: only an admin
+     * can provision users, so every role/branch assignment stays under admin control (RBAC).
+     *
+     * @param googleEmail verified e-mail address Google returned for the signed-in account
+     */
+    @Transactional
+    public TokenResponse loginWithGoogle(String googleEmail) {
+        String email = googleEmail.trim().toLowerCase();
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new BadCredentialsException(
+                        "No account is registered for " + googleEmail
+                                + ". Ask an admin to create it first, then sign in with Google again."));
+        if (!user.isActive()) {
+            throw new BadCredentialsException("Account is disabled");
+        }
+
+        String token = jwtService.issueToken(
+                user.getId(), user.getEmail(), user.getFullName(), user.getRole(), user.getBranchId());
+
+        auditService.record("USER_LOGIN_GOOGLE", "User", user.getId(),
+                "Signed in with Google: " + user.getEmail());
+
+        return new TokenResponse(token, "Bearer", ttlMinutes * 60, UserDto.from(user));
+    }
 }

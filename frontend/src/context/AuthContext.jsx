@@ -3,11 +3,6 @@ import api from '../api/client';
 
 const AuthContext = createContext(null);
 
-/**
- * Authentication state: stores the OAuth2 JWT and the profile returned by
- * POST /api/auth/login. Tokens live only in localStorage on the client and
- * are sent as "Authorization: Bearer ..." - the backend never caches them.
- */
 export function AuthProvider({ children }) {
   const [token, setToken] = useState(() => localStorage.getItem('token'));
   const [user, setUser] = useState(() => {
@@ -27,6 +22,20 @@ export function AuthProvider({ children }) {
     return data.user;
   }
 
+  async function loginWithToken(oauthToken) {
+    localStorage.setItem('token', oauthToken);
+    setToken(oauthToken);
+    try {
+      const { data } = await api.get('/auth/me');
+      localStorage.setItem('user', JSON.stringify(data));
+      setUser(data);
+      return data;
+    } catch (err) {
+      logout();
+      throw err;
+    }
+  }
+
   function logout() {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
@@ -39,7 +48,7 @@ export function AuthProvider({ children }) {
   }
 
   return (
-    <AuthContext.Provider value={{ token, user, login, logout, hasRole }}>
+    <AuthContext.Provider value={{ token, user, login, loginWithToken, logout, hasRole }}>
       {children}
     </AuthContext.Provider>
   );

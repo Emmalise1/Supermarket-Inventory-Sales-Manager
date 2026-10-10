@@ -1,8 +1,16 @@
 import { useEffect, useState } from 'react';
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from 'recharts';
 import api, { errorMessage } from '../api/client';
-import { formatMoney } from '../utils/format';
+import { formatMoney, formatPrice } from '../utils/format';
 
-/** Sales reports (admin/manager only - enforced by the backend too). */
 export default function Reports() {
   const [range, setRange] = useState({ from: '', to: '' });
   const [report, setReport] = useState(null);
@@ -98,6 +106,24 @@ export default function Reports() {
                 </tbody>
               </table>
             </div>
+
+            {report.topProducts.length > 0 && (
+              <div className="chart-box" style={{ marginTop: 16 }}>
+                <ResponsiveContainer width="100%" height={240}>
+                  <BarChart
+                    data={report.topProducts}
+                    layout="vertical"
+                    margin={{ top: 0, right: 16, bottom: 0, left: 0 }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis type="number" tickFormatter={(v) => v.toLocaleString('en-US')} />
+                    <YAxis type="category" dataKey="productName" width={150} />
+                    <Tooltip formatter={(value) => [formatPrice(value), 'Revenue']} />
+                    <Bar dataKey="revenue" fill="#2154d8" radius={[0, 4, 4, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            )}
           </div>
         </>
       )}

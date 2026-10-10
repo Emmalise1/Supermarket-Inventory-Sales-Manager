@@ -13,6 +13,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -60,6 +61,22 @@ class ApplicationIntegrationTest {
     @Test
     void contextLoads() {
         assertThat(true).isTrue();
+    }
+
+    @Test
+    void providersEndpoint_reportsGoogleDisabledWhenNoCredentialsAreConfigured() throws Exception {
+        mockMvc.perform(get("/api/auth/providers"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.password").value(true))
+                .andExpect(jsonPath("$.google").value(false));
+    }
+
+    @Test
+    void oauth2AuthorizationEndpoint_behavesLikeAnyUnknownEndpointWhenGoogleIsNotConfigured() throws Exception {
+        // no client registration -> the OAuth2 chain does not claim the path at all
+        mockMvc.perform(get("/api/oauth2/authorization/google"))
+                .andExpect(status().isUnauthorized())
+                .andExpect(header().doesNotExist("Location"));
     }
 
     @Test
