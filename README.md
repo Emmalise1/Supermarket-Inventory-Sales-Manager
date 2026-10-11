@@ -254,9 +254,13 @@ Health check for deployment verification: `GET /actuator/health`.
 
 ## 8. Project documentation
 
-- [docs/api.md](docs/api.md) - REST API reference
-- [docs/redis-caching.md](docs/redis-caching.md) - caching strategy + benchmark
-- [docs/database.md](docs/database.md) - MySQL schema and MongoDB collections
+- docs/final-documentation.pdf - full academic documentation (mid-term + final brief coverage, UML diagrams, requirements traceability)
+- docs/diagrams/ - exported UML diagram images
+- docs/diagram-sources/ - editable source files for the diagrams
+- docs/api.md - REST API reference
+- docs/redis-caching.md - caching strategy + benchmark
+- docs/database.md - MySQL schema and MongoDB collections
+- docs/local-development.md - local setup notes
 
 ## 9. Repository workflow
 
