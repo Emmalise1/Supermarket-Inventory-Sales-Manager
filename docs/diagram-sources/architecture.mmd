@@ -1,0 +1,39 @@
+flowchart TB
+    subgraph FE["React + Vite frontend (localhost:5173)"]
+        UI["React pages: Dashboard, POS, Products, Inventory,<br/>Suppliers, Branches, Reports, Audit, Users, Notifications"]
+        ROUTER["React Router + ProtectedRoute (role guard)"]
+        AX["Axios client - JWT interceptor"]
+        UI --> ROUTER --> AX
+    end
+
+    subgraph BE["Spring Boot 3.5.5 backend (localhost:8080)"]
+        SEC["Spring Security filter chain<br/>OAuth2 resource server (JWT, HS256)"]
+        CTRL["Web layer - 12 REST controllers<br/>@Valid Bean Validation"]
+        SVC["Service layer - business rules<br/>stock, sales, cache, reports"]
+        REPO["Spring Data JPA repositories"]
+        AUD["AuditService / NotificationService"]
+        SEC --> CTRL --> SVC
+        SVC --> REPO
+        SVC --> AUD
+    end
+
+    subgraph MQ["RabbitMQ (localhost:5672)"]
+        EX["Topic exchange: supermarket.events"]
+        Q["Queue: supermarket.notifications"]
+        EX --> Q
+    end
+
+    subgraph DATA["Data stores"]
+        MYSQL[("MySQL - source of truth<br/>8 tables: users, branches, categories,<br/>suppliers, products, sales, sale_items, stock_movements")]
+        MONGO[("MongoDB - documents<br/>audit_logs, notifications")]
+        REDIS[("Redis - cache only (TTL)<br/>product:barcode:*, product:id:*, dashboard:branch:*")]
+    end
+
+    AX -->|"REST /api + Bearer JWT"| SEC
+    CTRL --> REPO
+    SVC -->|"publish DomainEvent"| EX
+    Q -->|"@RabbitListener"| AUD
+    AUD --> MONGO
+    REPO <--> MYSQL
+    SVC <-->|"get / set / evict"| REDIS
+    ACT["Actuator health check (/actuator/health)"] --> BE

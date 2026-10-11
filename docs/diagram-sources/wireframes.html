@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Responsive wireframes</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: "Segoe UI", Arial, sans-serif; background: #eef1f5; padding: 26px; color: #2b3440; }
+  h1 { font-size: 19px; margin-bottom: 3px; }
+  p.sub { font-size: 12px; color: #5b6675; margin-bottom: 20px; }
+  .row { display: flex; gap: 22px; align-items: flex-start; }
+  .frame { background: #fff; border: 1px solid #ccd4de; border-radius: 6px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+  .cap { font-size: 11.5px; font-weight: 700; color: #44506180; background: #f5f7fa; border-bottom: 1px solid #e2e7ee; padding: 6px 10px; letter-spacing: .3px; }
+  .cap b { color: #2b3440; }
+  .shell { display: flex; }
+  .side { background: #1f2a37; color: #cfd8e3; width: 118px; padding: 10px 0; flex-shrink: 0; }
+  .side .brand { color: #fff; font-weight: 700; font-size: 12px; padding: 0 12px 12px; border-bottom: 1px solid #33404f; margin-bottom: 8px; }
+  .side .item { font-size: 11px; padding: 7px 12px; }
+  .side .item.on { background: #2f7d4f; color: #fff; border-radius: 0 14px 14px 0; margin-right: 10px; }
+  .main { flex: 1; padding: 12px; min-width: 0; }
+  .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+  .topbar .t { font-size: 13px; font-weight: 700; }
+  .pill { font-size: 10px; background: #e8f3ec; color: #2f7d4f; border: 1px solid #bcd9c6; border-radius: 10px; padding: 3px 8px; }
+  .cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 12px; }
+  .card { border: 1px solid #e2e7ee; border-radius: 5px; padding: 8px; background: #fafbfc; }
+  .card .lbl { font-size: 9.5px; color: #6b7686; text-transform: uppercase; letter-spacing: .4px; }
+  .card .val { font-size: 14px; font-weight: 700; margin-top: 3px; }
+  .panel { border: 1px solid #e2e7ee; border-radius: 5px; padding: 10px; }
+  .panel h3 { font-size: 11.5px; margin-bottom: 8px; color: #445061; }
+  table { width: 100%; border-collapse: collapse; font-size: 10px; }
+  th, td { text-align: left; padding: 5px 6px; border-bottom: 1px solid #eef1f5; }
+  th { color: #6b7686; font-weight: 600; background: #f7f9fb; }
+  .btn { display: inline-block; background: #2f7d4f; color: #fff; font-size: 10.5px; padding: 6px 12px; border-radius: 4px; }
+  .btn.sec { background: #fff; color: #2f7d4f; border: 1px solid #2f7d4f; }
+  .two { display: grid; grid-template-columns: 1.2fr 1fr; gap: 10px; }
+  .row2 { display: flex; gap: 8px; margin-bottom: 8px; }
+  .inp { flex: 1; border: 1px solid #ccd4de; border-radius: 4px; font-size: 10px; color: #8b95a3; padding: 6px 8px; background: #fff; }
+  .label { font-size: 9.5px; color: #6b7686; margin-bottom: 3px; }
+  .cartline { display: flex; justify-content: space-between; font-size: 10px; padding: 6px 0; border-bottom: 1px dashed #e2e7ee; }
+  .total { display: flex; justify-content: space-between; font-size: 12px; font-weight: 700; padding-top: 8px; }
+  .note { font-size: 10px; color: #6b7686; margin-top: 10px; }
+
+  /* tablet: 2-col cards, collapsed nav strip */
+  .frame.tablet .side { width: 52px; }
+  .frame.tablet .side .item { font-size: 0; padding: 9px 0; text-align: center; }
+  .frame.tablet .side .item::after { content: attr(data-i); font-size: 12px; }
+  .frame.tablet .cards { grid-template-columns: repeat(2, 1fr); }
+  .frame.tablet .two { grid-template-columns: 1fr; }
+
+  /* mobile: single column, top nav */
+  .frame.mobile .shell { flex-direction: column; }
+  .frame.mobile .side { width: 100%; display: flex; overflow: hidden; padding: 6px 0; }
+  .frame.mobile .side .brand { display: none; }
+  .frame.mobile .side .item { padding: 5px 8px; font-size: 9.5px; }
+  .frame.mobile .side .item.on { border-radius: 4px; margin: 0 4px; }
+  .frame.mobile .cards { grid-template-columns: 1fr; }
+  .frame.mobile .two { grid-template-columns: 1fr; }
+</style>
+</head>
+<body>
+<h1>SUPERmarket Inventory &amp; Sales Manager &mdash; responsive wireframes</h1>
+<p class="sub">Desktop (1280&ndash;1920px) &middot; Tablet (768&ndash;980px) &middot; Mobile (320&ndash;640px) &mdash; the same layout adapts through CSS media queries at 980px.</p>
+
+<div class="row">
+
+  <!-- DESKTOP -->
+  <div class="frame">
+    <div class="cap"><b>Desktop</b> &mdash; Dashboard (1280px+)</div>
+    <div class="shell">
+      <div class="side">
+        <div class="brand">SUPERmarket</div>
+        <div class="item on">Dashboard</div>
+        <div class="item">POS / Sales</div>
+        <div class="item">Products</div>
+        <div class="item">Inventory</div>
+        <div class="item">Suppliers</div>
+        <div class="item">Notifications</div>
+        <div class="item">Reports</div>
+        <div class="item">Audit history</div>
+        <div class="item">Branches</div>
+        <div class="item">Users</div>
+      </div>
+      <div class="main">
+        <div class="topbar"><span class="t">Dashboard &mdash; Kigali Main</span><span class="pill">MANAGER &middot; JWT active</span></div>
+        <div class="cards">
+          <div class="card"><div class="lbl">Products</div><div class="val">9</div></div>
+          <div class="card"><div class="lbl">Low stock</div><div class="val">1</div></div>
+          <div class="card"><div class="lbl">Today revenue</div><div class="val">RWF 12,400</div></div>
+          <div class="card"><div class="lbl">Today sales</div><div class="val">7</div></div>
+        </div>
+        <div class="two">
+          <div class="panel">
+            <h3>Recent sales</h3>
+            <table>
+              <tr><th>Receipt</th><th>Items</th><th>Total</th></tr>
+              <tr><td>S-8F2A1C9D</td><td>3</td><td>3,600</td></tr>
+              <tr><td>S-41B7E0A2</td><td>1</td><td>600</td></tr>
+              <tr><td>S-9C3D5E7B</td><td>5</td><td>7,200</td></tr>
+            </table>
+          </div>
+          <div class="panel">
+            <h3>Barcode lookup (Redis)</h3>
+            <div class="row2"><div class="inp">6001000000017</div><span class="btn">Scan</span></div>
+            <div class="note">Source: <b>Redis (cache hit)</b> &middot; 0.4 ms</div>
+            <div class="note">Miss falls back to MySQL automatically.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TABLET -->
+  <div class="frame tablet">
+    <div class="cap"><b>Tablet</b> &mdash; 980px breakpoint</div>
+    <div class="shell">
+      <div class="side">
+        <div class="brand">SM</div>
+        <div class="item on" data-i="D">Dashboard</div>
+        <div class="item" data-i="P">POS / Sales</div>
+        <div class="item" data-i="Pr">Products</div>
+        <div class="item" data-i="I">Inventory</div>
+        <div class="item" data-i="R">Reports</div>
+      </div>
+      <div class="main">
+        <div class="topbar"><span class="t">Dashboard</span><span class="pill">MANAGER</span></div>
+        <div class="cards">
+          <div class="card"><div class="lbl">Products</div><div class="val">9</div></div>
+          <div class="card"><div class="lbl">Low stock</div><div class="val">1</div></div>
+          <div class="card"><div class="lbl">Revenue</div><div class="val">12,400</div></div>
+          <div class="card"><div class="lbl">Sales</div><div class="val">7</div></div>
+        </div>
+        <div class="two">
+          <div class="panel"><h3>Recent sales</h3>
+            <table><tr><th>Receipt</th><th>Total</th></tr><tr><td>S-8F2A1C9D</td><td>3,600</td></tr><tr><td>S-41B7E0A2</td><td>600</td></tr></table>
+          </div>
+          <div class="panel"><h3>Barcode lookup</h3>
+            <div class="row2"><div class="inp">6001000000017</div><span class="btn">Scan</span></div>
+            <div class="note">Source: <b>Redis (cache hit)</b></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MOBILE -->
+  <div class="frame mobile" style="width:300px">
+    <div class="cap"><b>Mobile</b> &mdash; POS (320&ndash;640px)</div>
+    <div class="shell">
+      <div class="side">
+        <div class="item on">Dash</div>
+        <div class="item">POS</div>
+        <div class="item">Products</div>
+        <div class="item">Stock</div>
+        <div class="item">Alerts</div>
+      </div>
+      <div class="main">
+        <div class="topbar"><span class="t">POS &mdash; Kigali Main</span></div>
+        <div class="row2"><div class="inp">Scan / enter barcode</div><span class="btn">Add</span></div>
+        <div class="panel" style="margin-bottom:8px">
+          <div class="cartline"><span>Sugar 1kg x2</span><span>1,200</span></div>
+          <div class="cartline"><span>Soda 500ml x3</span><span>2,400</span></div>
+          <div class="total"><span>Total</span><span>3,600 RWF</span></div>
+        </div>
+        <span class="btn" style="display:block;text-align:center">Complete sale</span>
+        <div class="note">Negative stock is blocked by the backend.</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+<p class="note">Layout rules from <b>frontend/src/styles.css</b>: sidebar + main shell, 4-column card grid collapsing to 2 columns at &le;980px, POS grid 2 columns collapsing to 1 column, sidebar becoming a horizontal top bar on small screens.</p>
+</body>
+</html>

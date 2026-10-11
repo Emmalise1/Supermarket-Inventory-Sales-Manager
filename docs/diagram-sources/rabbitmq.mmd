@@ -1,0 +1,20 @@
+sequenceDiagram
+    autonumber
+    actor C as Cashier / Manager
+    participant S as Service layer<br/>(SaleService, InventoryService)
+    participant M as MySQL<br/>(source of truth)
+    participant R as Redis<br/>(cache)
+    participant P as EventPublisher
+    participant B as RabbitMQ<br/>topic exchange
+    participant N as NotificationConsumer
+    participant G as MongoDB<br/>(notifications)
+
+    C->>S: POST /api/sales (or goods-receiving / adjustment)
+    S->>M: validate stock, save Sale + SaleItem + StockMovement
+    S->>R: evict product:barcode:* and product:id:* keys
+    S->>P: publish DomainEvent (sale.completed / stock.low / ...)
+    P->>B: convertAndSend(supermarket.events, routing key)
+    B->>N: deliver JSON message to supermarket.notifications
+    N->>G: save Notification document (async)
+    G-->>C: notification visible in the UI
+    Note over P,B: If RabbitMQ is unreachable, EventPublisher applies<br/>the notification directly (synchronous fallback)

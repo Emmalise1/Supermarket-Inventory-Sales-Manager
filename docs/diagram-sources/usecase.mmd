@@ -1,0 +1,43 @@
+flowchart LR
+    subgraph SYS["SUPERmarket Inventory & Sales Manager"]
+        UC1["Login with email / password"]
+        UC2["View dashboard summary"]
+        UC3["Scan barcode / look up product"]
+        UC4["Record POS sale"]
+        UC5["Manage product catalog"]
+        UC6["Receive supplier goods"]
+        UC7["Adjust stock with reason"]
+        UC8["View low-stock alerts"]
+        UC9["Run sales reports"]
+        UC10["View audit history"]
+        UC11["Manage users and roles"]
+        UC12["Receive notifications"]
+    end
+
+    A1["Administrator<br/>(all branches)"] --> UC1
+    A1 --> UC2
+    A1 --> UC5
+    A1 --> UC6
+    A1 --> UC7
+    A1 --> UC9
+    A1 --> UC10
+    A1 --> UC11
+    A1 --> UC12
+
+    A2["Store manager<br/>(own branch)"] --> UC1
+    A2 --> UC2
+    A2 --> UC3
+    A2 --> UC5
+    A2 --> UC6
+    A2 --> UC7
+    A2 --> UC8
+    A2 --> UC9
+    A2 --> UC10
+    A2 --> UC12
+
+    A3["Cashier<br/>(own branch)"] --> UC1
+    A3 --> UC2
+    A3 --> UC3
+    A3 --> UC4
+    A3 --> UC8
+    A3 --> UC12

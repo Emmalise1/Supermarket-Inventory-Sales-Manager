@@ -1,0 +1,75 @@
+erDiagram
+    BRANCHES {
+        bigint id PK
+        varchar name UK
+        boolean active
+    }
+    USERS {
+        bigint id PK
+        varchar email UK
+        varchar password_hash
+        varchar full_name
+        varchar role
+        bigint branch_id FK
+        boolean active
+    }
+    CATEGORIES {
+        bigint id PK
+        varchar name UK
+    }
+    SUPPLIERS {
+        bigint id PK
+        varchar name
+        boolean active
+    }
+    PRODUCTS {
+        bigint id PK
+        varchar barcode UK
+        varchar name
+        bigint category_id FK
+        bigint supplier_id FK
+        bigint branch_id FK
+        decimal price
+        int quantity_in_stock
+        int low_stock_threshold
+        boolean active
+    }
+    SALES {
+        bigint id PK
+        varchar sale_number UK
+        bigint branch_id FK
+        bigint cashier_id FK
+        decimal total_amount
+        int item_count
+        varchar status
+    }
+    SALE_ITEMS {
+        bigint id PK
+        bigint sale_id FK
+        bigint product_id FK
+        varchar product_name
+        decimal unit_price
+        int quantity
+        decimal subtotal
+    }
+    STOCK_MOVEMENTS {
+        bigint id PK
+        varchar movement_type
+        bigint product_id FK
+        bigint branch_id FK
+        int quantity_change
+        varchar reason
+        bigint user_id FK
+    }
+
+    BRANCHES ||--o{ USERS : "staff of"
+    BRANCHES ||--o{ PRODUCTS : "stocks"
+    BRANCHES ||--o{ SALES : "receives"
+    BRANCHES ||--o{ STOCK_MOVEMENTS : "occurs in"
+    CATEGORIES ||--o{ PRODUCTS : "classifies"
+    SUPPLIERS ||--o{ PRODUCTS : "supplies"
+    USERS ||--o{ SALES : "serves as cashier"
+    USERS ||--o{ STOCK_MOVEMENTS : "performs"
+    PRODUCTS ||--o{ SALE_ITEMS : "sold as line"
+    PRODUCTS ||--o{ STOCK_MOVEMENTS : "affected by"
+    SALES ||--o{ SALE_ITEMS : "contains"

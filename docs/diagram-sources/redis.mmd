@@ -1,0 +1,16 @@
+flowchart TD
+    A["GET /api/products/barcode/6001000000017"] --> B{"Redis:<br/>product:barcode:6001000000017<br/>exists?"}
+    B -->|"<b>HIT</b> - TTL not expired"| C["Return cached product JSON<br/>MySQL NOT queried<br/>cacheHit = true"]
+    B -->|"<b>MISS</b>"| D["Query MySQL<br/>SELECT * FROM products<br/>WHERE barcode = ?"]
+    D --> E{"Product<br/>found?"}
+    E -->|No| F["404 Not Found"]
+    E -->|Yes| G["Store JSON in Redis<br/>TTL = 10 minutes"]
+    G --> H["Return product<br/>cacheHit = false"]
+    C --> I["Response: product + cacheHit + elapsedMs"]
+    H --> I
+
+    J["Write path: sale / receipt / adjustment /<br/>product update (price, barcode, stock)"] --> K["Update MySQL first"]
+    K --> L["Evict product:id:* and product:barcode:*<br/>keys from Redis"]
+    L --> M["Next read is a MISS - never stale data"]
+
+    N["Redis unavailable"] --> O["Catch exception, log once,<br/>fall back to MySQL - request still succeeds"]
